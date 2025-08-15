@@ -15,7 +15,7 @@ public class Tests
 	public void OptionalIntHasValue()
 	{
 		var opt = Maybe.Some(1);
-		Assert.That(() => opt, IsMaybe<int>.Some(1));
+		Assert.That(() => opt, Is.Maybe.Some(1));
 	}
 
 	[Test]
@@ -60,7 +60,7 @@ public class Tests
 	public void OptionalIntNothingHasNoValue()
 	{
 		Maybe<int> opt = Maybe.None;
-		Assert.That(() => opt, IsMaybe<int>.None);
+		Assert.That(() => opt, Is.Maybe<int>.None);
 	}
 
 	[Test]
@@ -83,7 +83,7 @@ public class Tests
 	public void OptionalStringCanHaveNullValue()
 	{
 		var opt = Maybe.Some<string>(null!);
-		Assert.That(() => opt, IsMaybe<string>.Some(null!));
+		Assert.That(() => opt, Is.Maybe<string>.Some(null!));
 	}
 
 	[Test]
@@ -160,7 +160,7 @@ public class Tests
 	public void ImplicitConversionFromIntToOptionalInt()
 	{
 		Maybe<int> opt = 42;
-		Assert.That(() => opt, IsMaybe<int>.Some(42));
+		Assert.That(() => opt, Is.Maybe<int>.Some(42));
 	}
 
 	[Test]
@@ -182,6 +182,6 @@ public class Tests
 	public void ImplicitConversionOfNullableIntToOptionalInt()
 	{
 		Maybe<int?> opt = (int?)null!;
-		Assert.That(() => opt, IsMaybe<int?>.Some(null!));
+		Assert.That(() => opt, Is.Maybe<int?>.Some(null!));
 	}
 }

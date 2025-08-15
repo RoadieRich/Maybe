@@ -1,7 +1,6 @@
-﻿using System.Runtime;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
-namespace RoadieRich.Maybe.Linq;
+namespace RoadieRich.Maybe.Linq.Debug;
 
 public static class MaybeExtensions
 {
@@ -13,7 +12,7 @@ public static class MaybeExtensions
 	/// <param name="maybe"></param>
 	/// <param name="selector"></param>
 	/// <returns></returns>
-	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, TResult> selector)
+	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, TResult> selector, [CallerArgumentExpression(nameof(selector))] string selectorExpression = "")
 	{
 		if (maybe is Maybe<TSource>.Some some)
 		{
@@ -30,7 +29,7 @@ public static class MaybeExtensions
 	/// <param name="maybe"></param>
 	/// <param name="selector"></param>
 	/// <returns></returns>
-	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<TResult>> selector)
+	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<TResult>> selector, [CallerArgumentExpression(nameof(selector))] string selectorExpression = "")
 	{
 		if (maybe is Maybe<TSource>.Some some)
 		{
@@ -49,8 +48,9 @@ public static class MaybeExtensions
 	/// <param name="convert"></param>
 	/// <param name="selector"></param>
 	/// <returns></returns>
-	public static Maybe<TResult> SelectMany<TSource, T2, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<T2>> convert, 
-		Func<TSource, T2, TResult> selector)
+	public static Maybe<TResult> SelectMany<TSource, T2, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<T2>> convert,
+		Func<TSource, T2, TResult> selector, [CallerArgumentExpression(nameof(convert))] string convertExpression = "", 
+		[CallerArgumentExpression(nameof(selector))] string selectorExpression = "")
 	{
 		if (maybe is Maybe<TSource>.Some some)
 		{
@@ -70,7 +70,7 @@ public static class MaybeExtensions
 	/// <param name="maybe"></param>
 	/// <param name="predicate"></param>
 	/// <returns></returns>
-	public static Maybe<TSource> Where<TSource>(this Maybe<TSource> maybe, Func<TSource, bool> predicate)
+	public static Maybe<TSource> Where<TSource>(this Maybe<TSource> maybe, Func<TSource, bool> predicate, [CallerArgumentExpression(nameof(predicate))] string predicateExpression = "")
 	{
 		if (maybe is Maybe<TSource>.Some some && predicate(some.Value))
 		{
@@ -78,13 +78,5 @@ public static class MaybeExtensions
 		}
 		return new Maybe<TSource>.None();
 	}
-
-	public static bool Contains<T>(this Maybe<T> maybe, T value)
-	{
-		if (maybe is Maybe<T>.Some some)
-		{
-			return EqualityComparer<T>.Default.Equals(some.Value, value);
-		}
-		return false;
-	}
 }
+

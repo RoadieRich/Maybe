@@ -36,7 +36,7 @@ namespace UnitTests
 			{
 				Assert.That(flattened, Contains.Item(1));
 				Assert.That(flattened, Contains.Item(2));
-				Assert.That(flattened, Has.Exactly(2).Count);
+				Assert.That(flattened, Has.Exactly(2).Items);
 			});
 		}
 	}
