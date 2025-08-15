@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using _Debug = System.Diagnostics.Debug;
 
 namespace RoadieRich.Maybe.Linq.Debug;
 
@@ -14,6 +15,7 @@ public static class MaybeExtensions
 	/// <returns></returns>
 	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, TResult> selector, [CallerArgumentExpression(nameof(selector))] string selectorExpression = "")
 	{
+		_Debug.WriteLine($"Maybe<{typeof(TSource).Name}>.Select({selectorExpression})");
 		if (maybe is Maybe<TSource>.Some some)
 		{
 			return new Maybe<TResult>.Some(selector(some.Value));
@@ -31,6 +33,7 @@ public static class MaybeExtensions
 	/// <returns></returns>
 	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<TResult>> selector, [CallerArgumentExpression(nameof(selector))] string selectorExpression = "")
 	{
+		_Debug.WriteLine($"Maybe<{typeof(TSource).Name}>.Select({selectorExpression})");
 		if (maybe is Maybe<TSource>.Some some)
 		{
 			return selector(some.Value);
@@ -52,6 +55,7 @@ public static class MaybeExtensions
 		Func<TSource, T2, TResult> selector, [CallerArgumentExpression(nameof(convert))] string convertExpression = "", 
 		[CallerArgumentExpression(nameof(selector))] string selectorExpression = "")
 	{
+		_Debug.WriteLine($"Maybe<{typeof(TSource).Name}>.SelectMany({convertExpression}, {selectorExpression})");
 		if (maybe is Maybe<TSource>.Some some)
 		{
 			var inner = convert(some.Value);
@@ -72,6 +76,7 @@ public static class MaybeExtensions
 	/// <returns></returns>
 	public static Maybe<TSource> Where<TSource>(this Maybe<TSource> maybe, Func<TSource, bool> predicate, [CallerArgumentExpression(nameof(predicate))] string predicateExpression = "")
 	{
+		_Debug.WriteLine($"Maybe<{typeof(TSource).Name}>.Where({predicateExpression})");
 		if (maybe is Maybe<TSource>.Some some && predicate(some.Value))
 		{
 			return maybe;
