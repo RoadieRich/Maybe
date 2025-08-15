@@ -1,4 +1,5 @@
-﻿using System.Runtime;
+﻿using System.Diagnostics;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 
 namespace RoadieRich.Maybe.Linq;
@@ -13,6 +14,7 @@ public static class MaybeExtensions
 	/// <param name="maybe"></param>
 	/// <param name="selector"></param>
 	/// <returns></returns>
+	[DebuggerNonUserCode]
 	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, TResult> selector)
 	{
 		if (maybe is Maybe<TSource>.Some some)
@@ -30,6 +32,7 @@ public static class MaybeExtensions
 	/// <param name="maybe"></param>
 	/// <param name="selector"></param>
 	/// <returns></returns>
+	[DebuggerNonUserCode]
 	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<TResult>> selector)
 	{
 		if (maybe is Maybe<TSource>.Some some)
@@ -49,6 +52,7 @@ public static class MaybeExtensions
 	/// <param name="convert"></param>
 	/// <param name="selector"></param>
 	/// <returns></returns>
+	[DebuggerNonUserCode]
 	public static Maybe<TResult> SelectMany<TSource, T2, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<T2>> convert, 
 		Func<TSource, T2, TResult> selector)
 	{
@@ -70,6 +74,7 @@ public static class MaybeExtensions
 	/// <param name="maybe"></param>
 	/// <param name="predicate"></param>
 	/// <returns></returns>
+	[DebuggerNonUserCode]
 	public static Maybe<TSource> Where<TSource>(this Maybe<TSource> maybe, Func<TSource, bool> predicate)
 	{
 		if (maybe is Maybe<TSource>.Some some && predicate(some.Value))
@@ -79,6 +84,7 @@ public static class MaybeExtensions
 		return new Maybe<TSource>.None();
 	}
 
+	[DebuggerNonUserCode]
 	public static bool Contains<T>(this Maybe<T> maybe, T value)
 	{
 		if (maybe is Maybe<T>.Some some)
