@@ -4,7 +4,7 @@ namespace UnitTests;
 
 public class MaybeIsNoneConstraint : Constraint
 {
-	public override string Description => $"to be None";
+	public override string Description => $"Maybe.None";
 
 	public override ConstraintResult ApplyTo<TActual>(TActual actual)
 	{

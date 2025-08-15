@@ -8,7 +8,7 @@ public class MaybeIsSomeConstraint<T>(T value) : Constraint
 {
 	private readonly T _value = value;
 
-	public override string Description => $"to be Some({_value})";
+	public override string Description => $"Maybe.Some({_value})";
 
 	public override ConstraintResult ApplyTo<TActual>(TActual actual)
 	{

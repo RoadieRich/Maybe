@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Optional\RoadieRich.Maybe.csproj" />
+    <ProjectReference Include="..\Maybe\RoadieRich.Maybe.csproj" />
   </ItemGroup>
 
   <ItemGroup>

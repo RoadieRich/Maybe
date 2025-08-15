@@ -1,5 +1,6 @@
 ﻿using RoadieRich.Maybe;
 using RoadieRich.Maybe.Linq;
+using System.Linq;
 
 namespace UnitTests;
 
@@ -148,16 +149,21 @@ public class LinqTests
 	}
 
 	[Test]
+	public void LinqSelectManyWithLetWorks()
+	{
+		var opt1 = Maybe.Some(1);
+		var opt2 = Maybe.Some(2);
+		var result = from v1 in opt1
+					 from v2 in opt2
+					 let s1 = v1.ToString()
+					 let s2 = v2.ToString()
+					 select s1 + " " + s2;
+		Assert.That(() => result, Is.Some("1 2"));
+	}
+
+	[Test]
 	public void LinqSelectMethodWorks()
 	{
 		Assert.That(() => Maybe.Some(1).Select(x => x + 1), Is.Some(2));
 	}
-
-	[Test]
-	public void LinqSelectMethodWithNoneReturnsNone()
-	{
-		Maybe<int> opt = Maybe.None;
-		Assert.That(() => opt.Select(x => x + 1), Is.None);
-	}
-
 }

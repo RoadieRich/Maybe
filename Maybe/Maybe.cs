@@ -1,14 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Numerics;
-
 namespace RoadieRich.Maybe;
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public abstract class Maybe<T>
 {
-	private Maybe()
-	{
-	}
+	private Maybe() { }
 
 	public sealed class Some(T value) : Maybe<T> { public T Value { get; } = value; }
 
@@ -16,10 +12,11 @@ public abstract class Maybe<T>
 
 	public TResult Match<TResult>(Func<T, TResult> some, Func<TResult> none)
 	{
-		if (this is Some s)
-			return some(s.Value);
-
-		return none();
+		return this switch
+		{
+			Some s => some(s.Value),
+			_ => none()
+		};
 	}
 
 	public void Match(Action<T> some, Action none)
@@ -46,9 +43,12 @@ public abstract class Maybe<T>
 
 	public static explicit operator T(Maybe<T> maybe)
 	{
-		return maybe.Match(
-			some: value => value,
-			none: () => throw new InvalidOperationException("Cannot convert None to a value."));
+		return maybe switch
+		{
+			Some some => some.Value,
+			None => throw new InvalidOperationException("Cannot convert None to a value."),
+			_ => throw new InvalidOperationException("Invalid Maybe type.")
+		};
 	}
 
 	public bool TryGetValue(out T? value)
@@ -126,25 +126,45 @@ public abstract class Maybe<T>
 
 	public override int GetHashCode()
 	{
-		if (this is Some s)
+		return this switch
 		{
-			return EqualityComparer<T>.Default.GetHashCode(s.Value!);
-		}
-		throw new InvalidOperationException("Cannot get hash code for None.");
+			Some s => EqualityComparer<T>.Default.GetHashCode(s.Value!),
+			_ => -1
+		};
+	}
+
+	public T Or(T defaultValue)
+	{
+		return this switch
+		{
+			Some s => s.Value,
+			_ => defaultValue
+		};
+	}
+
+	public T Or(Func<T> defaultValueFactory)
+	{
+		return this switch
+		{
+			Some s => s.Value,
+			_ => defaultValueFactory()
+		};
 	}
 
 	private string GetDebuggerDisplay()
 	{
-		return (this is Some s)
-			? $"[Some({s.Value})]"
-			: "[None]";
+		return this switch
+		{
+			Some s => $"Maybe.Some({s.Value})",
+			_ => "Maybe.None"
+		};
 	}
 }
 public static class Maybe
 {
 	public class MaybeNone { }
-	public static readonly MaybeNone None = new();
-	
+	public static MaybeNone None { get; } = new();
+
 	public static Maybe<T> Some<T>(T value)
 	{
 		return new Maybe<T>.Some(value);
