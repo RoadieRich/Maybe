@@ -3,7 +3,7 @@
 namespace UnitTests;
 
 [TestFixture]
-public class Tests
+public class MaybeTests
 {
 	[Test]
 	public void CanCreateOptionalInt()

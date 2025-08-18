@@ -80,4 +80,28 @@ public static class Extensions
 			return new Maybe<T>(obj);
 		}
 	}
+
+	public static Maybe<R> ToMaybe<L, R>(this Either<L, R> either)
+	{
+		if (either.IsRight)
+		{
+			return new Maybe<R>(either.RightValue);
+		}
+		else
+		{
+			return new Maybe<R>();
+		}
+	}
+
+	public static Either<L, R> ToEither<L, R>(this Maybe<R> maybe, L leftValue)
+	{
+		if (maybe.HasValue)
+		{
+			return Either<L, R>.Right(maybe.Value);
+		}
+		else
+		{
+			return Either<L, R>.Left(leftValue);
+		}
+	}
 }

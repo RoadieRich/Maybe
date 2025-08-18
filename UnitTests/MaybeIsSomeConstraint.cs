@@ -41,7 +41,7 @@ public class MaybeIsSomeConstraint<T> : Constraint
 		{
 			if (_value.HasValue && maybe.HasValue)
 			{
-				return new ConstraintResult(this, actual, comparer.Equals(maybe.Value, _value.Value));
+				return new ConstraintResult(this, actual, Equals(maybe.Value, _value.Value));
 			}
 			else
 			{

@@ -93,4 +93,41 @@ public static class MaybeExtensions
 		}
 		return false;
 	}
+
+	public static Maybe<TTo?> Cast<TTo>(this IMaybe maybe)
+	{
+		if (maybe is Maybe<TTo?> casted)
+		{
+			return casted;
+		}
+		if (maybe.HasValue)
+		{
+			try
+			{
+				if (maybe.ValueObject is null)
+				{
+					return new Maybe<TTo?>();
+				}
+				return new Maybe<TTo?>((TTo)maybe.ValueObject!);
+			}
+			catch (InvalidCastException)
+			{
+				return new Maybe<TTo?>();
+			}
+		}
+		else
+		{
+			return new Maybe<TTo?>();
+		}
+	}
+	public static Maybe<TResult> OfType<TResult, TSource>(this Maybe<TSource> maybe)
+	{
+		if (!maybe.HasValue)
+			return new Maybe<TResult>();
+
+		if (maybe.Value is TResult result)
+			return new Maybe<TResult>(result);
+
+		return new Maybe<TResult>();
+	}
 }

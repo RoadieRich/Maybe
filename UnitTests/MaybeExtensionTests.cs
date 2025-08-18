@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace UnitTests;
 
-public class ExtensionTests
+public class MaybeExtensionTests
 {
 	[Test]
 	public void IEnumerableExtensions_Maybe()

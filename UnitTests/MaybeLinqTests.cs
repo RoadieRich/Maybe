@@ -6,7 +6,7 @@ using UnitTests.Comparers;
 namespace UnitTests;
 
 [TestFixture]
-public class LinqTests
+public class MaybeLinqTests
 {
 	[Test]
 	public void CanUseLinqSelect()
@@ -191,5 +191,15 @@ public class LinqTests
 				return Maybe.Some(1.0 / x);
 			}
 		}
+	}
+
+	[Test]
+	public void CastWorks()
+	{
+		Maybe<int> optInt = Maybe.Some(42);
+		var result = from float v in optInt
+					 select v;
+
+		Assert.That(() => result, Is.Maybe<float>.Some(42f));
 	}
 }

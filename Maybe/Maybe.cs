@@ -2,12 +2,15 @@
 namespace RoadieRich.Maybe;
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public readonly struct Maybe<T>
+public readonly struct Maybe<T> : IMaybe
 {
+	
 	public bool HasValue { get; } = false;
 
 	private readonly T? _value = default;
 	public T Value { get { if (HasValue) return _value!; else throw new InvalidOperationException(); } }
+
+	object IMaybe.ValueObject => Value!;
 
 	public Maybe() { HasValue = false; }
 
@@ -39,7 +42,10 @@ public readonly struct Maybe<T>
 	{
 		return new();
 	}
-
+	
+	public static implicit operator Maybe(Maybe<T> m) =>
+		m.HasValue ? new Maybe(m.Value, true) : new Maybe(null, false);
+	
 	public static explicit operator T(Maybe<T> maybe)
 	{
 		return maybe.HasValue switch
@@ -48,7 +54,6 @@ public readonly struct Maybe<T>
 			false => throw new InvalidOperationException("Cannot convert None to a value."),
 		};
 	}
-
 	public bool TryGetValue(out T? value)
 	{
 		if (this.HasValue)
@@ -167,7 +172,8 @@ public readonly struct Maybe<T>
 		}
 	}
 }
-public static class Maybe
+
+public readonly struct Maybe
 {
 	public class MaybeNone { }
 	public static MaybeNone None { get; } = new();
@@ -176,4 +182,13 @@ public static class Maybe
 	{
 		return new Maybe<T>(value);
 	}
+	internal readonly object? _value;
+	public bool HasValue { get; }
+
+	internal Maybe(object? value, bool hasValue)
+	{
+		_value = value;
+		HasValue = hasValue;
+	}
+	public object Value { get { if (HasValue) return _value!; else throw new InvalidOperationException(); } }
 }
