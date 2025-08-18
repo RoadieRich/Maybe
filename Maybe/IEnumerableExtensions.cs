@@ -6,9 +6,9 @@ public static class IEnumerableExtensions
 	{
 		foreach (var item in source ?? [])
 		{
-			return Maybe.Some(item);
+			return new Maybe<T>.Some(item);
 		}
-		return Maybe.None;
+		return new Maybe<T>.None();
 	}
 
 	public static Maybe<T> FirstOrNone<T>(this IEnumerable<T> source, Func<T, bool> func) where T : IEquatable<T>
@@ -16,9 +16,9 @@ public static class IEnumerableExtensions
 		foreach (var item in source ?? [])
 		{
 			if (func(item))
-				return Maybe.Some(item);
+				return new Maybe<T>.Some(item);
 		}
-		return Maybe.None;
+		return new Maybe<T>.None();
 	}
 
 	public static Maybe<T> SingleOrNone<T>(this IEnumerable<T> source) where T : IEquatable<T>
@@ -34,8 +34,9 @@ public static class IEnumerableExtensions
 				break;
 
 		}
-		if (count == 1) return Maybe.Some(foundItem!);
-		return Maybe.None;
+		if (count == 1) return new Maybe<T>.Some(foundItem!);
+
+		return new Maybe<T>.None();
 	}
 
 	public static Maybe<T> SingleOrNone<T>(this IEnumerable<T> source, Func<T, bool> func) where T : IEquatable<T>
@@ -52,8 +53,8 @@ public static class IEnumerableExtensions
 					break;
 			}
 		}
-		if (count == 1) return Maybe.Some(foundItem!);
-		return Maybe.None;
+		if (count == 1) return new Maybe<T>.Some(foundItem!);
+		return new Maybe<T>.None();
 	}
 	public static Maybe<T> LastOrNone<T>(this IEnumerable<T> source) where T : IEquatable<T>
 	{
@@ -64,9 +65,9 @@ public static class IEnumerableExtensions
 			found = true;
 			foundItem = item;
 		}
-		if (found) return Maybe.Some(foundItem!);
+		if (found) return new Maybe<T>.Some(foundItem!);
 
-		return Maybe.None;
+		return new Maybe<T>.None();
 	}
 
 
@@ -82,37 +83,37 @@ public static class IEnumerableExtensions
 				foundItem = item;
 			}
 		}
-		if (found) return Maybe.Some(foundItem!);
+		if (found) return new Maybe<T>.Some(foundItem!);
 
-		return Maybe.None;
+		return new Maybe<T>.None();
 	}
 
 	public static Maybe<T> ElementAtOrNone<T>(this IEnumerable<T> source, int index)
 	{
-		if (index < 0) return Maybe.None;
+		if (index < 0) return new Maybe<T>.None();
 		int currentIndex = 0;
 		foreach (var item in source ?? [])
 		{
 			if (currentIndex == index)
 			{
-				return Maybe.Some(item);
+				return new Maybe<T>.Some(item);
 			}
 			currentIndex++;
 		}
-		return Maybe.None;
+		return new Maybe<T>.None();
 	}
 
 	public static Maybe<IEnumerable<T>> NoneIfEmpty<T>(this IEnumerable<T> source)
 	{
-		if (source == null || !source.Any()) return Maybe.None;
+		if (source == null || !source.Any()) return new Maybe<IEnumerable<T>>.None();
 
-		return Maybe.Some(source);
+		return new Maybe<IEnumerable<T>>.Some(source);
 	}
 
 	public static Maybe<IEnumerable<T>> Somes<T>(this IEnumerable<Maybe<T>> source)
 	{
-		if (source == null || !source.Any()) return Maybe.None;
-		return Maybe.Some(Iter(source));
+		if (source == null || !source.Any()) return new Maybe<IEnumerable<T>>.None();
+		return new Maybe<IEnumerable<T>>.Some(Iter(source));
 
 		static IEnumerable<T> Iter(IEnumerable<Maybe<T>> source)
 		{
@@ -124,5 +125,161 @@ public static class IEnumerableExtensions
 				}
 			}
 		}
+	}
+
+	public static Maybe<T> ItemAt<T>(this IList<T> list, int index)
+	{
+		if (list.Count > index && index >= 0)
+		{
+			return new Maybe<T>.Some(list[index]);
+		}
+		else
+		{
+			return new Maybe<T>.None();
+		}
+	}
+
+	public static Maybe<T> ItemAt<T>(this T[] array, int index)
+	{
+		if (array.Length > index && index >= 0)
+		{
+			return new Maybe<T>.Some(array[index]);
+		}
+		else
+		{
+			return new Maybe<T>.None();
+		}
+	}
+
+	public static Maybe<T> ItemAt<T>(this IReadOnlyList<T> list, int index)
+	{
+		if (list.Count > index && index >= 0)
+		{
+			return new Maybe<T>.Some(list[index]);
+		}
+		else
+		{
+			return new Maybe<T>.None();
+		}
+	}
+
+	public static Maybe<IEnumerable<T>> MaybeAny<T>(this IEnumerable<T> collection)
+	{
+		if (System.Linq.Enumerable.Any(collection))
+		{
+			return new Maybe<IEnumerable<T>>.Some(collection);
+		}
+		else
+		{
+			return new Maybe<IEnumerable<T>>.None();
+		}
+	}
+
+	public static Maybe<IEnumerable<T>> MaybeAny<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+	{
+		if (System.Linq.Enumerable.Any(collection, predicate))
+		{
+			return new Maybe<IEnumerable<T>>.Some(collection);
+		}
+		else
+		{
+			return new Maybe<IEnumerable<T>>.None();
+		}
+	}
+
+	public static Maybe<IEnumerable<T>> MaybeAll<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+	{
+		if (System.Linq.Enumerable.All(collection, predicate))
+		{
+			return new Maybe<IEnumerable<T>>.Some(collection);
+		}
+		else
+		{
+			return new Maybe<IEnumerable<T>>.None();
+		}
+	}
+
+	public static IEnumerable<Maybe<T>> AnyMaybe<T>(this IEnumerable<T> collection)
+	{
+		foreach (var item in collection)
+		{
+			yield return new Maybe<T>.Some(item);
+		}
+	}
+
+	public static IEnumerable<Maybe<T>> AnyMaybe<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+	{
+		foreach (var item in collection)
+		{
+			if (predicate(item))
+			{
+				yield return new Maybe<T>.Some(item);
+			}
+			else
+			{
+				yield return new Maybe<T>.None();
+			}
+		}
+	}
+
+	public static IEnumerable<Maybe<T>> Maybe<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+	{
+		foreach (var item in collection)
+		{
+			if (predicate(item))
+			{
+				yield return new Maybe<T>.Some(item);
+			}
+			else
+			{
+				yield return new Maybe<T>.None();
+			}
+		}
+	}
+
+	public static IEnumerable<Maybe<T>> Maybe<T>(this IEnumerable<T> collection, Func<T, Maybe<T>> predicate)
+	{
+		foreach (var item in collection)
+		{
+			yield return predicate(item);
+		}
+	}
+
+	public static IEnumerable<T> Flatten<T>(this IEnumerable<Maybe<T>> collection)
+	{
+		foreach (var item in collection)
+		{
+			if (item is Maybe<T>.Some some)
+			{
+				yield return some.Value;
+			}
+		}
+	}
+
+	public static int CountSome<T>(this IEnumerable<Maybe<T>> source)
+	{
+		if (source is null) return 0;
+		int count = 0;
+		foreach (var item in source)
+		{
+			if (item is Maybe<T>.Some)
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public static Maybe<T> FirstOrNone<T>(this IEnumerable<T> source, Func<T, Maybe<T>> predicate)
+	{
+		if (source is null) return new Maybe<T>.None();
+		foreach (var item in source)
+		{
+			if (predicate(item) is Maybe<T>.Some some )
+			{
+				return some;
+			}
+		}
+		return new Maybe<T>.None();
 	}
 }

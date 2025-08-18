@@ -1,6 +1,5 @@
 ﻿using RoadieRich.Maybe;
 using RoadieRich.Maybe.Linq;
-using System.Collections.Generic;
 using System.Linq;
 using UnitTests.Comparers;
 

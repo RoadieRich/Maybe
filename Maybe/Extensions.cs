@@ -1,139 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoadieRich.Maybe
+namespace RoadieRich.Maybe;
+
+public static class Extensions
 {
-	public static class Extensions
+	public static Maybe<T> AsSome<T>(this T value)
 	{
-		public static Maybe<T> AsSome<T>(this T value)
+		return new Maybe<T>.Some(value);
+	}
+
+	public static Maybe<T> AsNone<T>(this T _)
+	{
+		return new Maybe<T>.None();
+	}
+
+	public static Maybe<TValue> TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
+	{
+		ArgumentNullException.ThrowIfNull(dict);
+		if (dict.TryGetValue(key, out var value))
 		{
-			return new Maybe<T>.Some(value);
+			return new Maybe<TValue>.Some(value);
 		}
-		public static Maybe<T> AsNone<T>(this T _)
+		else
+		{
+			return new Maybe<TValue>.None();
+		}
+	}
+
+	public static Maybe<T> NoneIfNull<T>(T? obj) where T : struct
+	{
+		if (obj is null)
 		{
 			return new Maybe<T>.None();
 		}
-
-		public static Maybe<TValue> TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
+		else
 		{
-			ArgumentNullException.ThrowIfNull(dict);
-			if (dict.TryGetValue(key, out var value))
-			{
-				return new Maybe<TValue>.Some(value);
-			}
-			else
-			{
-				return new Maybe<TValue>.None();
-			}
+			return new Maybe<T>.Some(obj.Value);
 		}
+	}
 
-		public static Maybe<T> ItemAt<T>(this IList<T> list, int index)
+	public static Maybe<string> NoneIfNullOrWhiteSpace(string? str)
+	{
+		if (string.IsNullOrWhiteSpace(str))
 		{
-			if (list.Count > index && index >= 0)
-			{
-				return new Maybe<T>.Some(list[index]);
-			}
-			else
-			{
-				return new Maybe<T>.None();
-			}
+			return new Maybe<string>.None();
 		}
+		else
+		{
+			return new Maybe<string>.Some(str);
+		}
+	}
 
-		public static Maybe<T> ItemAt<T>(this T[] array, int index)
+	public static Maybe<string> NoneIfNullOrEmpty(string? str)
+	{
+		if (string.IsNullOrEmpty(str))
 		{
-			if (array.Length > index && index >= 0)
-			{
-				return new Maybe<T>.Some(array[index]);
-			}
-			else
-			{
-				return new Maybe<T>.None();
-			}
+			return new Maybe<string>.None();
 		}
+		else
+		{
+			return new Maybe<string>.Some(str);
+		}
+	}
 
-		public static Maybe<T> ItemAt<T>(this IReadOnlyList<T> list, int index)
+	public static Maybe<T> NoneIfNull<T>(this T? obj) where T : class
+	{
+		if (obj is null)
 		{
-			if (list.Count > index && index >= 0)
-			{
-				return new Maybe<T>.Some(list[index]);
-			}
-			else
-			{
-				return new Maybe<T>.None();
-			}
+			return new Maybe<T>.None();
 		}
-
-		public static Maybe<IEnumerable<T>> MaybeAny<T>(this IEnumerable<T> collection)
+		else
 		{
-			if (System.Linq.Enumerable.Any(collection))
-			{
-				return new Maybe<IEnumerable<T>>.Some(collection);
-			}
-			else
-			{
-				return new Maybe<IEnumerable<T>>.None();
-			}
+			return new Maybe<T>.Some(obj);
 		}
-
-		public static Maybe<IEnumerable<T>> MaybeAny<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
-		{
-			if (System.Linq.Enumerable.Any(collection, predicate))
-			{
-				return new Maybe<IEnumerable<T>>.Some(collection);
-			}
-			else
-			{
-				return new Maybe<IEnumerable<T>>.None();
-			}
-		}
-
-		public static Maybe<IEnumerable<T>> MaybeAll<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
-		{
-			if (System.Linq.Enumerable.All(collection, predicate))
-			{
-				return new Maybe<IEnumerable<T>>.Some(collection);
-			}
-			else
-			{
-				return new Maybe<IEnumerable<T>>.None();
-			}
-		}
-
-		public static IEnumerable<Maybe<T>> AnyMaybe<T>(this IEnumerable<T> collection)
-		{
-			foreach (var item in collection)
-			{
-				yield return new Maybe<T>.Some(item);
-			}
-		}
-
-		public static IEnumerable<Maybe<T>> Maybe<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
-		{
-			foreach (var item in collection)
-			{
-				if (predicate(item))
-				{
-					yield return new Maybe<T>.Some(item);
-				}
-				else
-				{
-					yield return new Maybe<T>.None();
-				}
-			}
-		}
-
-		public static IEnumerable<T> Flatten<T>(this IEnumerable<Maybe<T>> collection)
-		{
-			foreach (var item in collection)
-			{
-				if (item is Maybe<T>.Some some)
-				{
-					yield return some.Value;
-				}
-			}
-		}
-		}
+	}
 }

@@ -184,4 +184,20 @@ public class Tests
 		Maybe<int?> opt = (int?)null!;
 		Assert.That(() => opt, Is.Maybe<int?>.Some(null!));
 	}
+
+	[Test]
+	public void OrReturnsDefaultValueWhenNone()
+	{
+		Maybe<int> opt = Maybe.None;
+		int defaultValue = 42;
+		Assert.That(() => opt.Or(defaultValue), Is.EqualTo(defaultValue));
+	}
+
+	[Test]
+	public void OrReturnsValueWhenSome()
+	{
+		Maybe<int> opt = Maybe.Some(42);
+		int defaultValue = 0;
+		Assert.That(() => opt.Or(defaultValue), Is.EqualTo(42));
+	}
 }

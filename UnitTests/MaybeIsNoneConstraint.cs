@@ -1,7 +1,9 @@
 ﻿using NUnit.Framework.Constraints;
+using System.Diagnostics;
 
 namespace UnitTests;
 
+[DebuggerNonUserCode]
 public class MaybeIsNoneConstraint : Constraint
 {
 	public override string Description => $"Maybe.None";
