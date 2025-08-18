@@ -25,12 +25,23 @@ public class MaybeIsSomeWithoutTypeConstraint : Constraint
 		{
 			return new ConstraintResult(this, actual, false);
 		}
-		var type = actual.GetType();
-		// Check if this is a Maybe<T>.Some instance by looking for a containing type named Maybe`1 and a name "Some"
-		var declaringType = type.DeclaringType;
-		bool isMaybeSome = declaringType != null
-			&& declaringType.Name.StartsWith(nameof(Maybe<>))
-			&& type.Name == nameof(Maybe<>.Some);
-		return new ConstraintResult(this, actual, isMaybeSome);
+		
+		if (actual.GetType().IsGenericType == false || actual.GetType().GetGenericTypeDefinition() != typeof(Maybe<>))
+		{
+			return new ConstraintResult(this, actual, false);
+		}
+		else
+		{
+			// It's a Maybe<T>
+			var hasValueProperty = actual.GetType().GetProperty("HasValue");
+			if (hasValueProperty == null)
+			{
+				return new ConstraintResult(this, actual, false);
+			}
+			var hasValue = (bool)hasValueProperty.GetValue(actual)!;
+			bool isMaybeSome = hasValue;
+			return new ConstraintResult(this, actual, isMaybeSome);
+		}
+
 	}
 }

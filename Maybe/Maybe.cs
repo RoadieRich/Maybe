@@ -2,60 +2,58 @@
 namespace RoadieRich.Maybe;
 
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-public abstract class Maybe<T>
+public readonly struct Maybe<T>
 {
-	private Maybe() { }
+	public bool HasValue { get; } = false;
 
-	public sealed class Some(T value) : Maybe<T> { public T Value { get; } = value; }
+	private readonly T? _value = default;
+	public T Value { get { if (HasValue) return _value!; else throw new InvalidOperationException(); } }
 
-	public sealed class None : Maybe<T> { }
+	public Maybe() { HasValue = false; }
+
+	public Maybe(T value)
+	{
+		HasValue = true;
+		_value = value;
+	}
+
 
 	public TResult Match<TResult>(Func<T, TResult> some, Func<TResult> none)
 	{
-		return this switch
-		{
-			Some s => some(s.Value),
-			_ => none()
-		};
+		if (HasValue) return some(Value);
+		else return none();
 	}
 
 	public void Match(Action<T> some, Action none)
 	{
-		if (this is Some s)
-		{
-			some(s.Value);
-		}
-		else
-		{
-			none();
-		}
+		if (HasValue) some(Value);
+		else none();
 	}
 
 	public static implicit operator Maybe<T>(T value)
 	{
-		return new Some(value);
+		return new(value);
 	}
 
 	public static implicit operator Maybe<T>(Maybe.MaybeNone _)
 	{
-		return new None();
+		return new();
 	}
 
 	public static explicit operator T(Maybe<T> maybe)
 	{
-		return maybe switch
+		return maybe.HasValue switch
 		{
-			Some some => some.Value,
-			None => throw new InvalidOperationException("Cannot convert None to a value."),
-			_ => throw new InvalidOperationException("Invalid Maybe type.")
+			true => maybe.Value,
+			false => throw new InvalidOperationException("Cannot convert None to a value."),
 		};
 	}
 
 	public bool TryGetValue(out T? value)
 	{
-		if (this is Some some)
+		if (this.HasValue)
 		{
-			value = some.Value;
+			value = Value;
 			return true;
 		}
 
@@ -65,10 +63,10 @@ public abstract class Maybe<T>
 
 	public static bool operator ==(Maybe<T> left, Maybe<T> right)
 	{
-		if (left is None && right is None)
+		if (!left.HasValue && !right.HasValue)
 			return true;
-		if (left is Some l && right is Some r)
-			return EqualityComparer<T>.Default.Equals(l.Value, r.Value);
+		if (left.HasValue && right.HasValue)
+			return EqualityComparer<T>.Default.Equals(left.Value, right.Value);
 		return false;
 	}
 
@@ -78,10 +76,10 @@ public abstract class Maybe<T>
 	}
 	public static bool operator ==(Maybe<T> left, T right)
 	{
-		if (left is None && right is None)
-			return true;
-		if (left is Some l)
-			return EqualityComparer<T>.Default.Equals(l.Value, right);
+		if (!left.HasValue)
+			return false;
+		if (left.HasValue)
+			return EqualityComparer<T>.Default.Equals(left.Value, right);
 		return false;
 	}
 
@@ -92,10 +90,10 @@ public abstract class Maybe<T>
 
 	public static bool operator ==(T left, Maybe<T> right)
 	{
-		if (left is None && right is None)
-			return true;
-		if (right is Some r)
-			return EqualityComparer<T>.Default.Equals(left, r.Value);
+		if (!right.HasValue)
+			return false;
+		if (right.HasValue)
+			return EqualityComparer<T>.Default.Equals(left, right.Value);
 		return false;
 	}
 
@@ -106,58 +104,67 @@ public abstract class Maybe<T>
 
 	public override bool Equals(object? obj)
 	{
-		if (ReferenceEquals(this, obj))
-		{
-			return true;
-		}
-
 		if (obj is null)
 		{
 			return false;
 		}
-
-		return (this, obj) switch
+		else if (obj is Maybe<T> maybe)
 		{
-			(Some s, Some o) => EqualityComparer<T>.Default.Equals(s.Value, o.Value),
-			(None, None) => true,
-			_ => false
-		};
+			return this == maybe;
+		}
+		else if (obj is T value)
+		{
+			return this == value;
+		}
+		else return false;
 	}
 
 	public override int GetHashCode()
 	{
-		return this switch
+		if (HasValue)
 		{
-			Some s => EqualityComparer<T>.Default.GetHashCode(s.Value!),
-			_ => -1
-		};
+			return Value is null ? 0 : Value.GetHashCode();
+		}
+		else
+		{
+			return -1;
+		}
 	}
 
-	public T Or(T defaultValue)
+	public T? Or(T defaultValue)
 	{
-		return this switch
+		if (HasValue)
 		{
-			Some s => s.Value,
-			_ => defaultValue
-		};
+			return Value;
+		}
+		else
+		{
+			return defaultValue;
+		}
 	}
 
-	public T Or(Func<T> defaultValueFactory)
+	public T? Or(Func<T> defaultValueFactory)
 	{
-		return this switch
+		if (HasValue)
 		{
-			Some s => s.Value,
-			_ => defaultValueFactory()
-		};
+			return Value;
+		}
+		else
+		{
+			return defaultValueFactory();
+		}
 	}
 
 	private string GetDebuggerDisplay()
 	{
-		return this switch
+		if (HasValue)
 		{
-			Some s => $"Maybe.Some({s.Value})",
-			_ => "Maybe.None"
-		};
+			return $"Maybe.Some({Value})";
+		}
+		else
+		{
+			return "Maybe.None";
+		}
 	}
 }
 public static class Maybe
@@ -167,6 +174,6 @@ public static class Maybe
 
 	public static Maybe<T> Some<T>(T value)
 	{
-		return new Maybe<T>.Some(value);
+		return new Maybe<T>(value);
 	}
 }

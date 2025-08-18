@@ -12,12 +12,12 @@ public static class Extensions
 {
 	public static Maybe<T> AsSome<T>(this T value)
 	{
-		return new Maybe<T>.Some(value);
+		return new Maybe<T>(value);
 	}
 
 	public static Maybe<T> AsNone<T>(this T _)
 	{
-		return new Maybe<T>.None();
+		return new Maybe<T>();
 	}
 
 	public static Maybe<TValue> TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
@@ -25,11 +25,11 @@ public static class Extensions
 		ArgumentNullException.ThrowIfNull(dict);
 		if (dict.TryGetValue(key, out var value))
 		{
-			return new Maybe<TValue>.Some(value);
+			return new Maybe<TValue>(value);
 		}
 		else
 		{
-			return new Maybe<TValue>.None();
+			return new Maybe<TValue>();
 		}
 	}
 
@@ -37,11 +37,11 @@ public static class Extensions
 	{
 		if (obj is null)
 		{
-			return new Maybe<T>.None();
+			return new Maybe<T>();
 		}
 		else
 		{
-			return new Maybe<T>.Some(obj.Value);
+			return new Maybe<T>(obj.Value);
 		}
 	}
 
@@ -49,11 +49,11 @@ public static class Extensions
 	{
 		if (string.IsNullOrWhiteSpace(str))
 		{
-			return new Maybe<string>.None();
+			return new Maybe<string>();
 		}
 		else
 		{
-			return new Maybe<string>.Some(str);
+			return new Maybe<string>(str);
 		}
 	}
 
@@ -61,11 +61,11 @@ public static class Extensions
 	{
 		if (string.IsNullOrEmpty(str))
 		{
-			return new Maybe<string>.None();
+			return new Maybe<string>();
 		}
 		else
 		{
-			return new Maybe<string>.Some(str);
+			return new Maybe<string>(str);
 		}
 	}
 
@@ -73,11 +73,11 @@ public static class Extensions
 	{
 		if (obj is null)
 		{
-			return new Maybe<T>.None();
+			return new Maybe<T>();
 		}
 		else
 		{
-			return new Maybe<T>.Some(obj);
+			return new Maybe<T>(obj);
 		}
 	}
 }

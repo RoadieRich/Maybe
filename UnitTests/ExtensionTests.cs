@@ -17,7 +17,7 @@ public class ExtensionTests
 		Assert.Multiple(() =>
 		{
 			Assert.That(maybeList, Contains.Item(Maybe.Some(1)));
-			Assert.That(maybeList, Contains.Item(new Maybe<int>.None()));
+			Assert.That(maybeList, Contains.Item((Maybe<int>)Maybe.None));
 			Assert.That(maybeList, Contains.Item(Maybe.Some(3)));
 		});
 	}

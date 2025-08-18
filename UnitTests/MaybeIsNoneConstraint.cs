@@ -21,12 +21,24 @@ public class MaybeIsNoneConstraint : Constraint
 		{
 			return new ConstraintResult(this, actual, false);
 		}
-		var type = actual.GetType();
-		var declaringType = type.DeclaringType;
-		bool isMaybeNone = declaringType != null
-			&& declaringType.Name.StartsWith(nameof(Maybe<>))
-			&& type.Name == nameof(Maybe<>.None);
 
-		return new ConstraintResult(this, actual, isMaybeNone);
+		if (actual.GetType().IsGenericType == false || actual.GetType().GetGenericTypeDefinition() != typeof(Maybe<>))
+		{
+			return new ConstraintResult(this, actual, false);
+		}
+		else
+		{
+			// It's a Maybe<T>
+			var hasValueProperty = actual.GetType().GetProperty("HasValue");
+			if (hasValueProperty == null)
+			{
+				return new ConstraintResult(this, actual, false);
+			}
+			var hasValue = (bool)hasValueProperty.GetValue(actual)!;
+			bool isMaybeNone = !hasValue;
+
+			return new ConstraintResult(this, actual, isMaybeNone);
+		}
+
 	}
 }

@@ -6,9 +6,9 @@ public static class IEnumerableExtensions
 	{
 		foreach (var item in source ?? [])
 		{
-			return new Maybe<T>.Some(item);
+			return new Maybe<T>(item);
 		}
-		return new Maybe<T>.None();
+		return new Maybe<T>();
 	}
 
 	public static Maybe<T> FirstOrNone<T>(this IEnumerable<T> source, Func<T, bool> func) where T : IEquatable<T>
@@ -16,9 +16,9 @@ public static class IEnumerableExtensions
 		foreach (var item in source ?? [])
 		{
 			if (func(item))
-				return new Maybe<T>.Some(item);
+				return new Maybe<T>(item);
 		}
-		return new Maybe<T>.None();
+		return new Maybe<T>();
 	}
 
 	public static Maybe<T> SingleOrNone<T>(this IEnumerable<T> source) where T : IEquatable<T>
@@ -34,9 +34,9 @@ public static class IEnumerableExtensions
 				break;
 
 		}
-		if (count == 1) return new Maybe<T>.Some(foundItem!);
+		if (count == 1) return new Maybe<T>(foundItem!);
 
-		return new Maybe<T>.None();
+		return new Maybe<T>();
 	}
 
 	public static Maybe<T> SingleOrNone<T>(this IEnumerable<T> source, Func<T, bool> func) where T : IEquatable<T>
@@ -53,8 +53,8 @@ public static class IEnumerableExtensions
 					break;
 			}
 		}
-		if (count == 1) return new Maybe<T>.Some(foundItem!);
-		return new Maybe<T>.None();
+		if (count == 1) return new Maybe<T>(foundItem!);
+		return new Maybe<T>();
 	}
 	public static Maybe<T> LastOrNone<T>(this IEnumerable<T> source) where T : IEquatable<T>
 	{
@@ -65,9 +65,9 @@ public static class IEnumerableExtensions
 			found = true;
 			foundItem = item;
 		}
-		if (found) return new Maybe<T>.Some(foundItem!);
+		if (found) return new Maybe<T>(foundItem!);
 
-		return new Maybe<T>.None();
+		return new Maybe<T>();
 	}
 
 
@@ -83,45 +83,45 @@ public static class IEnumerableExtensions
 				foundItem = item;
 			}
 		}
-		if (found) return new Maybe<T>.Some(foundItem!);
+		if (found) return new Maybe<T>(foundItem!);
 
-		return new Maybe<T>.None();
+		return new Maybe<T>();
 	}
 
 	public static Maybe<T> ElementAtOrNone<T>(this IEnumerable<T> source, int index)
 	{
-		if (index < 0) return new Maybe<T>.None();
+		if (index < 0) return new Maybe<T>();
 		int currentIndex = 0;
 		foreach (var item in source ?? [])
 		{
 			if (currentIndex == index)
 			{
-				return new Maybe<T>.Some(item);
+				return new Maybe<T>(item);
 			}
 			currentIndex++;
 		}
-		return new Maybe<T>.None();
+		return new Maybe<T>();
 	}
 
 	public static Maybe<IEnumerable<T>> NoneIfEmpty<T>(this IEnumerable<T> source)
 	{
-		if (source == null || !source.Any()) return new Maybe<IEnumerable<T>>.None();
+		if (source == null || !source.Any()) return new Maybe<IEnumerable<T>>();
 
-		return new Maybe<IEnumerable<T>>.Some(source);
+		return new Maybe<IEnumerable<T>>(source);
 	}
 
 	public static Maybe<IEnumerable<T>> Somes<T>(this IEnumerable<Maybe<T>> source)
 	{
-		if (source == null || !source.Any()) return new Maybe<IEnumerable<T>>.None();
-		return new Maybe<IEnumerable<T>>.Some(Iter(source));
+		if (source == null || !source.Any()) return new Maybe<IEnumerable<T>>();
+		return new Maybe<IEnumerable<T>>(Iter(source));
 
 		static IEnumerable<T> Iter(IEnumerable<Maybe<T>> source)
 		{
 			foreach (var item in source)
 			{
-				if (item is Maybe<T>.Some some)
+				if (item.HasValue)
 				{
-					yield return some.Value;
+					yield return item.Value;
 				}
 			}
 		}
@@ -131,11 +131,11 @@ public static class IEnumerableExtensions
 	{
 		if (list.Count > index && index >= 0)
 		{
-			return new Maybe<T>.Some(list[index]);
+			return new Maybe<T>(list[index]);
 		}
 		else
 		{
-			return new Maybe<T>.None();
+			return new Maybe<T>();
 		}
 	}
 
@@ -143,11 +143,11 @@ public static class IEnumerableExtensions
 	{
 		if (array.Length > index && index >= 0)
 		{
-			return new Maybe<T>.Some(array[index]);
+			return new Maybe<T>(array[index]);
 		}
 		else
 		{
-			return new Maybe<T>.None();
+			return new Maybe<T>();
 		}
 	}
 
@@ -155,11 +155,11 @@ public static class IEnumerableExtensions
 	{
 		if (list.Count > index && index >= 0)
 		{
-			return new Maybe<T>.Some(list[index]);
+			return new Maybe<T>(list[index]);
 		}
 		else
 		{
-			return new Maybe<T>.None();
+			return new Maybe<T>();
 		}
 	}
 
@@ -167,11 +167,11 @@ public static class IEnumerableExtensions
 	{
 		if (System.Linq.Enumerable.Any(collection))
 		{
-			return new Maybe<IEnumerable<T>>.Some(collection);
+			return new Maybe<IEnumerable<T>>(collection);
 		}
 		else
 		{
-			return new Maybe<IEnumerable<T>>.None();
+			return new Maybe<IEnumerable<T>>();
 		}
 	}
 
@@ -179,11 +179,11 @@ public static class IEnumerableExtensions
 	{
 		if (System.Linq.Enumerable.Any(collection, predicate))
 		{
-			return new Maybe<IEnumerable<T>>.Some(collection);
+			return new Maybe<IEnumerable<T>>(collection);
 		}
 		else
 		{
-			return new Maybe<IEnumerable<T>>.None();
+			return new Maybe<IEnumerable<T>>();
 		}
 	}
 
@@ -191,11 +191,11 @@ public static class IEnumerableExtensions
 	{
 		if (System.Linq.Enumerable.All(collection, predicate))
 		{
-			return new Maybe<IEnumerable<T>>.Some(collection);
+			return new Maybe<IEnumerable<T>>(collection);
 		}
 		else
 		{
-			return new Maybe<IEnumerable<T>>.None();
+			return new Maybe<IEnumerable<T>>();
 		}
 	}
 
@@ -203,7 +203,7 @@ public static class IEnumerableExtensions
 	{
 		foreach (var item in collection)
 		{
-			yield return new Maybe<T>.Some(item);
+			yield return new Maybe<T>(item);
 		}
 	}
 
@@ -213,11 +213,11 @@ public static class IEnumerableExtensions
 		{
 			if (predicate(item))
 			{
-				yield return new Maybe<T>.Some(item);
+				yield return new Maybe<T>(item);
 			}
 			else
 			{
-				yield return new Maybe<T>.None();
+				yield return new Maybe<T>();
 			}
 		}
 	}
@@ -228,11 +228,11 @@ public static class IEnumerableExtensions
 		{
 			if (predicate(item))
 			{
-				yield return new Maybe<T>.Some(item);
+				yield return new Maybe<T>(item);
 			}
 			else
 			{
-				yield return new Maybe<T>.None();
+				yield return new Maybe<T>();
 			}
 		}
 	}
@@ -249,9 +249,9 @@ public static class IEnumerableExtensions
 	{
 		foreach (var item in collection)
 		{
-			if (item is Maybe<T>.Some some)
+			if (item.HasValue)
 			{
-				yield return some.Value;
+				yield return item.Value;
 			}
 		}
 	}
@@ -262,7 +262,7 @@ public static class IEnumerableExtensions
 		int count = 0;
 		foreach (var item in source)
 		{
-			if (item is Maybe<T>.Some)
+			if (item.HasValue)
 			{
 				count++;
 			}
@@ -272,14 +272,14 @@ public static class IEnumerableExtensions
 
 	public static Maybe<T> FirstOrNone<T>(this IEnumerable<T> source, Func<T, Maybe<T>> predicate)
 	{
-		if (source is null) return new Maybe<T>.None();
+		if (source is null) return new Maybe<T>();
 		foreach (var item in source)
 		{
-			if (predicate(item) is Maybe<T>.Some some )
+			if (predicate(item) is Maybe<T> some )
 			{
 				return some;
 			}
 		}
-		return new Maybe<T>.None();
+		return new Maybe<T>();
 	}
 }

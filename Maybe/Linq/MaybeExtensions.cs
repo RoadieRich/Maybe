@@ -17,11 +17,11 @@ public static class MaybeExtensions
 	[DebuggerNonUserCode]
 	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, TResult> selector)
 	{
-		if (maybe is Maybe<TSource>.Some some)
+		if (maybe.HasValue)
 		{
-			return new Maybe<TResult>.Some(selector(some.Value));
+			return new Maybe<TResult>(selector(maybe.Value));
 		}
-		return new Maybe<TResult>.None();
+		return new Maybe<TResult>();
 	}
 
 	/// <summary>
@@ -35,11 +35,11 @@ public static class MaybeExtensions
 	[DebuggerNonUserCode]
 	public static Maybe<TResult> Select<TSource, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<TResult>> selector)
 	{
-		if (maybe is Maybe<TSource>.Some some)
+		if (maybe.HasValue)
 		{
-			return selector(some.Value);
+			return selector(maybe.Value);
 		}
-		return new Maybe<TResult>.None();
+		return new Maybe<TResult>();
 	}
 
 	/// <summary>
@@ -56,15 +56,15 @@ public static class MaybeExtensions
 	public static Maybe<TResult> SelectMany<TSource, T2, TResult>(this Maybe<TSource> maybe, Func<TSource, Maybe<T2>> convert, 
 		Func<TSource, T2, TResult> selector)
 	{
-		if (maybe is Maybe<TSource>.Some some)
+		if (maybe.HasValue)
 		{
-			var inner = convert(some.Value);
-			if (inner is Maybe<T2>.Some innerSome)
+			var inner = convert(maybe.Value);
+			if (inner.HasValue)
 			{
-				return new Maybe<TResult>.Some(selector(some.Value, innerSome.Value));
+				return new Maybe<TResult>(selector(maybe.Value, inner.Value));
 			}
 		}
-		return new Maybe<TResult>.None();
+		return new Maybe<TResult>();
 	}
 
 	/// <summary>
@@ -77,19 +77,19 @@ public static class MaybeExtensions
 	[DebuggerNonUserCode]
 	public static Maybe<TSource> Where<TSource>(this Maybe<TSource> maybe, Func<TSource, bool> predicate)
 	{
-		if (maybe is Maybe<TSource>.Some some && predicate(some.Value))
+		if (maybe.HasValue && predicate(maybe.Value))
 		{
 			return maybe;
 		}
-		return new Maybe<TSource>.None();
+		return new Maybe<TSource>();
 	}
 
 	[DebuggerNonUserCode]
 	public static bool Contains<T>(this Maybe<T> maybe, T value)
 	{
-		if (maybe is Maybe<T>.Some some)
+		if (maybe.HasValue)
 		{
-			return EqualityComparer<T>.Default.Equals(some.Value, value);
+			return EqualityComparer<T>.Default.Equals(maybe.Value, value);
 		}
 		return false;
 	}

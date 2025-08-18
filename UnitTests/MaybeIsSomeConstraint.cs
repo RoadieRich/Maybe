@@ -19,7 +19,7 @@ public class MaybeIsSomeConstraint<T> : Constraint
 {
 	private readonly Maybe<T> _value;
 
-	public override string Description => $"Maybe.Some({(_value is Maybe<T>.Some some ? some.Value : "...")})";
+	public override string Description => $"Maybe.Some({(_value.HasValue ? _value.Value : "...")})";
 
 	private IEqualityComparer<T>? _comparer = null;
 
@@ -35,17 +35,18 @@ public class MaybeIsSomeConstraint<T> : Constraint
 
 	public override ConstraintResult ApplyTo<TActual>(TActual actual)
 	{
-
 		var comparer = _comparer ?? EqualityComparer<T>.Default;
 
-		if (actual is Maybe<T>.Some some)
+		if (actual is Maybe<T> maybe)
 		{
-			if (_value is Maybe<T>.Some someValue)
+			if (_value.HasValue && maybe.HasValue)
 			{
-				return new ConstraintResult(this, actual, comparer.Equals(some.Value, someValue.Value));
+				return new ConstraintResult(this, actual, comparer.Equals(maybe.Value, _value.Value));
 			}
 			else
+			{
 				return new ConstraintResult(this, actual, true);
+			}
 		}
 		else
 		{

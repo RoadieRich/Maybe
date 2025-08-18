@@ -89,70 +89,63 @@ public class Tests
 	[Test]
 	public void OptionalStringCanBeEquatedWithNull()
 	{
-		var opt = new Maybe<string?>.Some(null);
+		var opt = Maybe.Some<string?>(null);
 		Assert.That(() => opt == null!, Is.True);
 	}
 
 	[Test]
 	public void OptionalStringsWithNullAreEqual()
 	{
-		var opt1 = new Maybe<string>.Some(null!);
-		var opt2 = new Maybe<string>.Some(null!);
+		var opt1 = Maybe.Some<string>(null!);
+		var opt2 = Maybe.Some<string>(null!);
 
 		Assert.That(() => opt1 == opt2, Is.True);
 	}
 
 	[Test]
-	public void OptionalStringCanBeNotEqualToNull()
-	{
-		var opt = new Maybe<string?>.Some("test");
-		Assert.That(() => opt == null, Is.False);
-	}
-
-	[Test]
 	public void OptionalStringNothingIsNotEqualToOptionalStringValue()
 	{
-		var opt1 = new Maybe<string>.None();
-		var opt2 = new Maybe<string>.Some("test");
+		Maybe<string> opt1 = Maybe.None;
+		Maybe<string> opt2 = Maybe.Some("test");
 		Assert.That(() => opt1 == opt2, Is.False);
 	}
 
 	[Test]
 	public void OptionalStringNothingIsNotEqualToNull()
 	{
-		var opt = new Maybe<string?>.None();
-		Assert.That(() => opt == null, Is.False);
+		Maybe<string> opt = Maybe.None;
+		Assert.That(() => opt == null!, Is.False);
 	}
 
 	[Test]
 	public void OptionalStringNothingIsNotEqualToOptionalStringWithNull()
 	{
-		var opt1 = new Maybe<string>.None();
-		var opt2 = new Maybe<string>.Some(null!);
+		Maybe<string> opt1 = Maybe.None;
+		Maybe<string> opt2 = Maybe.Some((string?)null!);
 		Assert.That(() => opt1 == opt2, Is.False);
 	}
 
 	[Test]
 	public void OptionalStringNothingIsNotEqualToOptionalStringWithValue()
 	{
-		var opt1 = new Maybe<string>.None();
-		var opt2 = new Maybe<string>.Some("test");
+		Maybe<string> opt1 = Maybe.None;
+		Maybe<string> opt2 = Maybe.Some("test");
 		Assert.That(() => opt1 == opt2, Is.False);
 	}
 
 	[Test]
 	public void OptionalStringWithNullIsNotEqualToOptionalStringWithValue()
 	{
-		var opt1 = new Maybe<string>.Some(null!);
-		var opt2 = new Maybe<string>.Some("test");
+		Maybe<string> opt1 = Maybe.Some<string>(null!);
+		Maybe<string> opt2 = Maybe.Some("test");
 		Assert.That(() => opt1 == opt2, Is.False);
 	}
 
 	[Test]
 	public void OptionalStringWithValueIsNotEqualToOptionalStringWithNull()
 	{
-		var opt1 = new Maybe<string>.Some("test");
-		var opt2 = new Maybe<string>.Some(null!);
+		Maybe<string> opt1 = Maybe.Some("test");
+		Maybe<string> opt2 = Maybe.Some<string>(null!);
 		Assert.That(() => opt1 == opt2, Is.False);
 	}
 
@@ -166,7 +159,7 @@ public class Tests
 	[Test]
 	public void ExplicitConversionFromOptionalIntToInt()
 	{
-		Maybe<int>.Some opt = new(42);
+		Maybe<int> opt = new(42);
 		int value = (int)opt;
 		Assert.That(() => value, Is.EqualTo(42));
 	}
