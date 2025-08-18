@@ -5,12 +5,21 @@ using System.Diagnostics;
 
 namespace UnitTests;
 
+/// <summary>
+/// Represents a constraint that verifies whether a <see cref="Maybe{T}"/> instance is in the "Some" state and
+/// optionally matches a specified value.
+/// </summary>
+/// <remarks>This constraint is used to validate that a <see cref="Maybe{T}"/> object is in the "Some" state.  If
+/// a specific value is provided during construction, the constraint also checks whether the value  matches the expected
+/// value using an equality comparer. By default, the equality comparer is  <see cref="EqualityComparer{T}.Default"/>,
+/// but a custom comparer can be specified using the  <see cref="Using"/> method.</remarks>
+/// <typeparam name="T"></typeparam>
 [DebuggerNonUserCode]
 public class MaybeIsSomeConstraint<T> : Constraint
 {
 	private readonly Maybe<T> _value;
 
-	public override string Description => $"Maybe.Some({_value})";
+	public override string Description => $"Maybe.Some({(_value is Maybe<T>.Some some ? some.Value : "...")})";
 
 	private IEqualityComparer<T>? _comparer = null;
 
